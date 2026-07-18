@@ -33,6 +33,7 @@ Options:
 
 - `--timeout` sets the connection timeout in milliseconds (default: 500)
 - `-j, --threads` sets the number of worker threads (default: 50)
+- `-p, --protocol` selects the scan protocol (`tcp` or `udp`, default: `tcp`)
 
 Example with custom values:
 
