@@ -59,18 +59,46 @@ cargo run -- 192.168.1.0/24 20 100 --timeout 1000 -j 100
 
 ## CLI options
 
-- `--timeout`: connection timeout in milliseconds (default: `500`)
-- `-j, --threads`: worker thread count (default: `50`)
-- `-p, --protocol`: scan protocol (`tcp` or `udp`, default: `tcp`)
-- `--ping-sweep`: only scan hosts that respond to ICMP echo requests
+The positional arguments are:
+
+- `host`: an IP address, hostname, or IPv4 CIDR range
+- `start_port`: first port in the inclusive scan range
+- `end_port`: last port in the inclusive scan range
+
+Optional settings are:
+
+| Option | Default | Description |
+| --- | ---: | --- |
+| `--timeout <milliseconds>` | `500` | Maximum time allowed for each connection attempt |
+| `-j, --threads <count>` | `50` | Number of worker threads used for port scanning |
+| `-p, --protocol <tcp\|udp>` | `tcp` | Protocol to scan; UDP requires the `udp-scan` feature |
+| `--ping-sweep` | disabled | Scan only hosts that respond to an ICMP echo request |
+
+Run `cargo run -- --help` to display the generated command-line help.
+
+## Configuration
+
+Configuration is supplied through command-line arguments and is converted into a `ScanConfig` value before scanning begins. The configuration contains the target host, port range, timeout, worker count, selected protocol, and ping-sweep setting.
+
+Port ranges are inclusive. For example, `20 100` scans ports 20 through 100. The application rejects a range where `start_port` is greater than `end_port`.
+
+Timeouts are specified in milliseconds and apply to each connection attempt. Increasing the timeout can improve results on slower networks but may make scans take longer. The worker count controls concurrency; the scanner limits the effective worker count to the number of ports being scanned.
 
 ## UDP support
 
-UDP scanning is available behind an optional feature flag:
+TCP scanning is enabled by default. UDP scanning is optional and is disabled unless the `udp-scan` Cargo feature is enabled:
 
 ```bash
-cargo run --features udp-scan -- 192.168.1.0/24 53 53 -p udp
+cargo run --features udp-scan -- 192.168.1.0/24 53 53 --protocol udp
 ```
+
+You can also build the feature-enabled binary first:
+
+```bash
+cargo build --features udp-scan
+```
+
+Without this feature, selecting `--protocol udp` does not perform UDP probing. Enable the feature when UDP scanning is required.
 
 ## Notes
 
