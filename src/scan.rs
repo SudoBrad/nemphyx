@@ -82,7 +82,11 @@ pub fn expand_targets(target: &str) -> Vec<String> {
 
         let ip_u32 = u32::from(ip);
         let prefix_len = prefix_len as u32;
-        let mask = if prefix_len == 0 { 0 } else { u32::MAX << (32 - prefix_len) };
+        let mask = if prefix_len == 0 {
+            0
+        } else {
+            u32::MAX << (32 - prefix_len)
+        };
         let network_u32 = ip_u32 & mask;
         let broadcast_u32 = if prefix_len == 0 {
             u32::MAX
