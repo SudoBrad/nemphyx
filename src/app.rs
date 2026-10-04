@@ -16,7 +16,10 @@ pub fn run(args: Args) -> Result<(), String> {
 
     let targets = if config.ping_sweep {
         let alive = discover_alive_hosts(&targets, config.timeout);
-        println!("Ping sweep found {} host(s) responding to ICMP.", alive.len());
+        println!(
+            "Ping sweep found {} host(s) responding to ICMP.",
+            alive.len()
+        );
         alive
     } else {
         targets
@@ -52,7 +55,10 @@ pub fn run(args: Args) -> Result<(), String> {
     println!("\nScan complete.");
     println!("{}", format_report(&host_reports));
 
-    let total_open_ports = host_reports.iter().map(|(_, ports)| ports.len()).sum::<usize>();
+    let total_open_ports = host_reports
+        .iter()
+        .map(|(_, ports)| ports.len())
+        .sum::<usize>();
     let hosts_with_open_ports = host_reports
         .iter()
         .filter(|(_, ports)| !ports.is_empty())
