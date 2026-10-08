@@ -25,13 +25,35 @@ src/
 └── scan.rs        # protocol definitions, pinging, CIDR expansion, port scanning
 ```
 
-## Build
+## Prerequisites
+
+- **Rust 1.70+**: Download and install from [rustup.rs](https://rustup.rs/)
+- **Git**: Required to clone the repository
+
+## Download and Setup
+
+Clone the repository:
 
 ```bash
-cargo build
+git clone https://github.com/SudoBrad/nemphyx.git
+cd nemphyx
 ```
 
+## Build
+
+Build the binary:
+
+```bash
+cargo build --release
+```
+
+The compiled binary will be located at `target/release/nemphyx`.
+
 ## Run
+
+You can run the scanner using `cargo run` or by executing the compiled binary directly.
+
+### Using `cargo run`
 
 Scan a single host:
 
@@ -57,6 +79,20 @@ Custom timeout and thread count:
 cargo run -- 192.168.1.0/24 20 100 --timeout 1000 -j 100
 ```
 
+### Using the compiled binary
+
+After building, run the binary directly:
+
+```bash
+./target/release/nemphyx 192.168.1.3 1 1024
+```
+
+Or from anywhere if you add it to your PATH:
+
+```bash
+nemphyx 192.168.1.0/24 1 1024 --ping-sweep
+```
+
 ## CLI options
 
 The positional arguments are:
@@ -74,15 +110,15 @@ Optional settings are:
 | `-p, --protocol <tcp\|udp>` | `tcp` | Protocol to scan; UDP requires the `udp-scan` feature |
 | `--ping-sweep` | disabled | Scan only hosts that respond to an ICMP echo request |
 
-Run `cargo run -- --help` to display the generated command-line help.
+Run `cargo run -- --help` or `./target/release/nemphyx --help` to display the generated command-line help.
 
 ## Configuration
 
-Configuration is supplied through command-line arguments and is converted into a `ScanConfig` value before scanning begins. The configuration contains the target host, port range, timeout, worker count, selected protocol, and ping-sweep setting.
+Configuration is supplied through command-line arguments and is converted into a `ScanConfig` value before scanning begins. The configuration contains the target host, port range, timeout, and worker count.
 
 Port ranges are inclusive. For example, `20 100` scans ports 20 through 100. The application rejects a range where `start_port` is greater than `end_port`.
 
-Timeouts are specified in milliseconds and apply to each connection attempt. Increasing the timeout can improve results on slower networks but may make scans take longer. The worker count controls concurrency; the scanner limits the effective worker count to the number of ports being scanned.
+Timeouts are specified in milliseconds and apply to each connection attempt. Increasing the timeout can improve results on slower networks but may make scans take longer. The worker count controls concurrency and should be adjusted based on your system resources and network capacity.
 
 ## UDP support
 
@@ -95,7 +131,7 @@ cargo run --features udp-scan -- 192.168.1.0/24 53 53 --protocol udp
 You can also build the feature-enabled binary first:
 
 ```bash
-cargo build --features udp-scan
+cargo build --release --features udp-scan
 ```
 
 Without this feature, selecting `--protocol udp` does not perform UDP probing. Enable the feature when UDP scanning is required.
