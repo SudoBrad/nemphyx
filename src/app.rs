@@ -1,3 +1,4 @@
+use crate::audit::audit_target;
 use crate::cli::Args;
 use crate::config::ScanConfig;
 use crate::report::format_report;
@@ -9,6 +10,13 @@ pub fn run(args: Args) -> Result<(), String> {
     }
 
     let config = ScanConfig::from(args);
+    if config.service_audit && (config.host.contains('/') || config.ping_sweep) {
+        return Err("--service-audit requires one explicitly specified host; CIDR ranges and --ping-sweep are not supported".to_string());
+    }
+    if config.service_audit && config.protocol != crate::scan::ScanProtocol::Tcp {
+        return Err("--service-audit requires TCP scanning".to_string());
+    }
+
     let targets = expand_targets(&config.host);
     if targets.is_empty() {
         return Err(format!("unable to expand target range {}", config.host));
@@ -67,6 +75,10 @@ pub fn run(args: Args) -> Result<(), String> {
     println!("Hosts scanned: {}", targets.len());
     println!("Hosts with open ports: {}", hosts_with_open_ports);
     println!("Total open ports found: {}", total_open_ports);
+
+    if config.service_audit {
+        audit_target(&config.host, config.timeout, config.insecure_tls)?;
+    }
 
     Ok(())
 }
