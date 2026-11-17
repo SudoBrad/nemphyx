@@ -29,4 +29,12 @@ pub struct Args {
     /// Perform an ICMP ping sweep and scan only hosts that respond
     #[arg(long)]
     pub ping_sweep: bool,
+
+    /// Audit HTTP and HTTPS security headers/cookies on this single host
+    #[arg(long)]
+    pub service_audit: bool,
+
+    /// Continue HTTPS auditing when the server certificate is invalid (use only on trusted targets)
+    #[arg(long, requires = "service_audit")]
+    pub insecure_tls: bool,
 }
