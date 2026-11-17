@@ -12,6 +12,8 @@ pub struct ScanConfig {
     pub threads: usize,
     pub protocol: ScanProtocol,
     pub ping_sweep: bool,
+    pub service_audit: bool,
+    pub insecure_tls: bool,
 }
 
 impl From<Args> for ScanConfig {
@@ -24,6 +26,8 @@ impl From<Args> for ScanConfig {
             threads: args.threads,
             protocol: args.protocol,
             ping_sweep: args.ping_sweep,
+            service_audit: args.service_audit,
+            insecure_tls: args.insecure_tls,
         }
     }
 }
